@@ -5,9 +5,18 @@
       <div class="action-buttons">
         <button @click="handleBooking">预定</button>
         <button @click="handleRecords">预定记录</button>
-        <button @click="handleDaily">已预定</button>
-        <button @click="handleReport">我的预订</button>
-        <button @click="handleDate">日期定</button>
+        <div class="button-with-color">
+          <span class="color-block selected-color"></span>
+          <button @click="handleDaily">已选择</button>
+        </div>
+        <div class="button-with-color">
+          <span class="color-block booked-color"></span>
+          <button @click="handleReport">已预订</button>
+        </div>
+        <div class="button-with-color">
+          <span class="color-block my-booking-color"></span>
+          <button @click="handleDate">我的预订</button>
+        </div>
       </div>
     </div>
 
@@ -210,5 +219,50 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 30px;
+}
+.button-with-color {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.color-block {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+}
+
+.selected-color {
+  background-color: #ffeb3b; /* 黄色 */
+}
+
+.booked-color {
+  background-color: #f44336; /* 红色 */
+}
+
+.my-booking-color {
+  background-color: #2196f3; /* 蓝色 */
+}
+
+/* 假设 RoomCard 组件中有时间槽元素，可根据预订情况添加颜色 */
+.room-card .time-slot {
+  cursor: pointer;
+  padding: 5px;
+  margin: 2px;
+  border-radius: 3px;
+}
+
+.room-card .time-slot.selected {
+  background-color: #ffeb3b;
+}
+
+.room-card .time-slot.booked {
+  background-color: #f44336;
+  color: white;
+}
+
+.room-card .time-slot.my-booking {
+  background-color: #2196f3;
+  color: white;
 }
 </style>
