@@ -10,15 +10,20 @@
         :room="room"
         :current-date="currentDate"
         :time-slots="timeSlots"
+        :selected-slots="selectedSlots"
+        @select-slot="handleSelectSlot"
         @book-slot="handleBookSlot"
     />
   </div>
 </template>
 
 <script>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { format, addDays } from 'date-fns'
 import TimeSlotTable from './TimeSlotTable.vue'
+
+// 模拟当前用户
+const currentUser = '张三'
 
 export default {
   components: { TimeSlotTable },
@@ -38,11 +43,37 @@ export default {
   },
   emits: ['book-slot'],
   setup(props, { emit }) {
+    const selectedSlots = ref(new Set())
+
+    const handleSelectSlot = (time) => {
+      if (selectedSlots.value.has(time)) {
+        const formattedDate = format(props.currentDate, 'yyyy-MM-dd')
+        const isBooked = props.room.bookings[formattedDate]?.[time]
+        if (isBooked) {
+          if (props.room.bookings[formattedDate][time] === currentUser) {
+            alert('这是您已预定的时段！')
+          } else {
+            alert('这是他人已预定的时段！')
+          }
+        } else {
+          const confirmBook = confirm(`确定要预定 ${formattedDate} ${time} 这个时段吗？`)
+          if (confirmBook) {
+            emit('book-slot', { date: formattedDate, time })
+          }
+        }
+        selectedSlots.value.delete(time)
+      } else {
+        selectedSlots.value.add(time)
+      }
+    }
+
     const handleBookSlot = (data) => {
       emit('book-slot', { roomId: props.room.id, ...data })
     }
 
     return {
+      selectedSlots,
+      handleSelectSlot,
       handleBookSlot
     }
   }

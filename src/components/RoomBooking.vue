@@ -6,16 +6,20 @@
         <button @click="handleBooking">预定</button>
         <button @click="handleRecords">预定记录</button>
         <div class="button-with-color">
-          <span class="color-block selected-color"></span>
-          <button @click="handleDaily">已选择</button>
+          <span class="color-block selected-not-booked-color"></span>
+          <button @click="handleDaily">已选择但未预定</button>
         </div>
         <div class="button-with-color">
-          <span class="color-block booked-color"></span>
-          <button @click="handleReport">已预订</button>
+          <span class="color-block booked-by-others-color"></span>
+          <button @click="handleReport">已预定（别人的）</button>
         </div>
         <div class="button-with-color">
           <span class="color-block my-booking-color"></span>
           <button @click="handleDate">我的预订</button>
+        </div>
+        <div class="button-with-color">
+          <span class="color-block not-booked-color"></span>
+          <button>未预定</button>
         </div>
       </div>
     </div>
@@ -54,6 +58,9 @@ import { ref, computed } from 'vue'
 import { format } from 'date-fns'
 import RoomCard from './RoomCard.vue'
 
+// 模拟当前用户
+const currentUser = '张三'
+
 export default {
   components: { RoomCard },
   setup() {
@@ -65,9 +72,9 @@ export default {
         capacity: 20,
         description: '支持换屏，电话会议',
         bookings: {
-          '2022-05-01': { '8:00': '张三', '10:00': '赵六', '14:00': '王老七' },
-          '2022-05-02': { '9:00': '李四', '13:00': '张三' },
-          '2022-05-03': { '11:00': '王五' }
+          '2025-05-01': { '8:00': '张三', '11:00': '赵六', '15:00': '王老七' },
+          '2025-05-02': { '10:00': '李四', '14:00': '张三' },
+          '2025-05-03': { '12:00': '王五' }
         }
       },
       {
@@ -76,9 +83,9 @@ export default {
         capacity: 20,
         description: '支持换屏，电话会议',
         bookings: {
-          '2022-05-01': { '8:00': '张三', '10:00': '赵六', '14:00': '王老七' },
-          '2022-05-02': { '9:00': '李四', '13:00': '张三' },
-          '2022-05-03': { '11:00': '王五' }
+          '2025-05-01': { '9:00': '孙七', '13:00': '周八', '16:00': '吴九' },
+          '2025-05-02': { '11:00': '郑十', '15:00': '陈十一' },
+          '2025-05-03': { '13:00': '林十二' }
         }
       },
       {
@@ -87,9 +94,9 @@ export default {
         capacity: 20,
         description: '支持换屏，电话会议',
         bookings: {
-          '2022-05-01': { '8:00': '张三', '10:00': '赵六', '14:00': '王老七' },
-          '2022-05-02': { '9:00': '李四', '13:00': '张三' },
-          '2022-05-03': { '11:00': '王五' }
+          '2025-05-01': { '10:00': '胡十三', '14:00': '朱十四', '17:00': '徐十五' },
+          '2025-05-02': { '12:00': '吕十六', '16:00': '施十七' },
+          '2025-05-03': { '14:00': '张十八' }
         }
       }
     ])
@@ -100,8 +107,9 @@ export default {
       '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'
     ])
 
-    // 当前日期
-    const currentDate = ref(new Date('2022-05-01'))
+    // 修改当前日期为现实时间
+    const currentDate = ref(new Date())
+
     const selectedRoom = ref('all')
 
     // 格式化当前日期
@@ -135,13 +143,10 @@ export default {
       const room = rooms.value.find(r => r.id === roomId)
       if (!room) return
 
-      const booker = prompt(`预定会议室${roomId} ${date} ${time}\n请输入预定人姓名:`)
-      if (booker) {
-        if (!room.bookings[date]) {
-          room.bookings[date] = {}
-        }
-        room.bookings[date][time] = booker
+      if (!room.bookings[date]) {
+        room.bookings[date] = {}
       }
+      room.bookings[date][time] = currentUser
     }
 
     // 按钮处理函数
@@ -232,16 +237,20 @@ button:hover {
   border-radius: 3px;
 }
 
-.selected-color {
+.selected-not-booked-color {
   background-color: #ffeb3b; /* 黄色 */
 }
 
-.booked-color {
+.booked-by-others-color {
   background-color: #f44336; /* 红色 */
 }
 
 .my-booking-color {
   background-color: #2196f3; /* 蓝色 */
+}
+
+.not-booked-color {
+  background-color: #4CAF50; /* 绿色 */
 }
 
 /* 假设 RoomCard 组件中有时间槽元素，可根据预订情况添加颜色 */
@@ -252,11 +261,11 @@ button:hover {
   border-radius: 3px;
 }
 
-.room-card .time-slot.selected {
+.room-card .time-slot.selected-not-booked {
   background-color: #ffeb3b;
 }
 
-.room-card .time-slot.booked {
+.room-card .time-slot.booked-by-others {
   background-color: #f44336;
   color: white;
 }
@@ -265,4 +274,9 @@ button:hover {
   background-color: #2196f3;
   color: white;
 }
+
+.room-card .time-slot.not-booked {
+  background-color: #4CAF50;
+}
 </style>
+<mcfile name="RoomBooking.vue" path="d:\siyouyun\最终项目\bookingroom\src\components\RoomBooking.vue"></mcfile>
